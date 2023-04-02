@@ -2,6 +2,7 @@ import React, { useCallback, useState } from 'react';
 import axios from 'axios';
 import Head from 'next/head';
 import Dropzone from 'react-dropzone';
+
 import ImageUploadResult from '@/components/ImageUploadResult';
 
 const Home = () => {
@@ -14,13 +15,15 @@ const Home = () => {
     setApiResponse(null);
 
     const formData = new FormData();
+    const headers = {
+      'Access-Control-Allow-Origin': '*',
+      'Content-Type' : 'form-data',
+    }
     formData.append('image', acceptedFiles[0]);
 
     try{
-      const response = await axios.post('/image/process', formData);
+      const response = await axios.post('http://localhost:1337/image/process', formData, {headers});
       setApiResponse(response.data);
-      ImageUploadResult(response.data)
-    
     } catch (error) {
       console.error(error);
       setUploadMessage('Error uploading image');
@@ -58,7 +61,7 @@ const Home = () => {
         {uploadMessage && <p>{uploadMessage}</p>}
 
         {/* Display API response */}
-        {apiResponse && <ImageUploadResult data={"{\r\n    \"success\": true,\r\n    \"message\": \"Image uploaded successfully\",\r\n    \"data\": {\r\n        \"imageId\": \"c84f9052-cca7-4d00-9368-ebe1d6f7f174\",\r\n        \"resultedText\": \"Cat,Eye,Felidae,Carnivore,Small to medium-sized cats,Whiskers,Iris,Terrestrial animal,Snout,Tree\",\r\n        \"translations\": [\r\n            {\r\n                \"lang\": \"ro\",\r\n                \"message\": \"Pisic\u0103, ochi, felidae, carnivor, pisici de talie mic\u0103 p\u00E2n\u0103 la mijlocie, must\u0103\u021Bi, iris, animal terestru, bot, copac\"\r\n            },\r\n            {\r\n                \"lang\": \"de\",\r\n                \"message\": \"Katze, Auge, Felidae, Fleischfresser, Kleine bis mittelgro\u00DFe Katzen, Schnurrhaare, Schwertlilien, Landtiere, Schnauze, Baum\"\r\n            }\r\n        ],\r\n        \"feeling\": {\r\n            \"magnitude\": 0,\r\n            \"score\": 0\r\n        }\r\n    }\r\n}"} />}
+        {apiResponse && <ImageUploadResult data={apiResponse.data}/>}
       </main>
 
       <style jsx>{`
