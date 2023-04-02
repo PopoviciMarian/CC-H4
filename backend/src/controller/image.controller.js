@@ -1,18 +1,22 @@
 const { postRequest, getRequest } = require('../module/requests');
 
 const cloudApi = async (base64Image) => {
-    // const { imageId } = (await postRequest('images-function', '', { imageData: base64Image })).data;
-    const imageId = 'c84f9052-cca7-4d00-9368-ebe1d6f7f174'
+    const { imageId } = (await postRequest('images-function', '', { imageData: base64Image })).data;
     console.log('imageId', imageId);
 
-    const { data } = await getRequest('analyze_image', imageId);
-    const resultedText = ','.join(data);
-    console.log(data);
+    const { description } = (await getRequest('analyze_image', imageId)).data;
+    const resultedText = description.join(',');
+    console.log('resultedText', resultedText);
+    
+    const { translations } = (await postRequest('translate_text', '', { message: resultedText }))?.data?.data;
+    console.log('Translations', translations);
 
-    // const { data }
-
+    const { data } = (await postRequest('rate_text', '', { message: resultedText }));
     return {
         imageId,
+        resultedText,
+        translations,
+        feeling: data.data.sentiment,
     }
 }
 
@@ -45,6 +49,7 @@ exports.processImageController = async (req,res, next) => {
             data: response,
         });
     } catch (error) {
+        console.error(error);
         return next(error);
     }
 }
