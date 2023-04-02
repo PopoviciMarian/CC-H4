@@ -22,7 +22,7 @@ const Home = () => {
     formData.append('image', acceptedFiles[0]);
 
     try{
-      const response = await axios.post('http://localhost:1337/image/process', formData, {headers});
+      const response = await axios.post('https://total-treat-382511.lm.r.appspot.com/image/process', formData, {headers});
       setApiResponse(response.data);
     } catch (error) {
       console.error(error);
@@ -59,7 +59,6 @@ const Home = () => {
 
         {/* Display upload message */}
         {uploadMessage && <p>{uploadMessage}</p>}
-
         {/* Display API response */}
         {apiResponse && <ImageUploadResult data={apiResponse.data}/>}
       </main>
